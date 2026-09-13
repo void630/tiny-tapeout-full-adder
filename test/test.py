@@ -1,40 +1,44 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
-# SPDX-License-Identifier: Apache-2.0
-
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles
-
 
 @cocotb.test()
-async def test_project(dut):
-    dut._log.info("Start")
+async def test_full_adder(dut):
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, unit="us")
-    cocotb.start_soon(clock.start())
+    # Test all 8 combinations of A, B, and Cin
+    test_vectors = [
+        (0, 0, 0, 0, 0),
+        (0, 0, 1, 1, 0),
+        (0, 1, 0, 1, 0),
+        (0, 1, 1, 0, 1),
+        (1, 0, 0, 1, 0),
+        (1, 0, 1, 0, 1),
+        (1, 1, 0, 0, 1),
+        (1, 1, 1, 1, 1),
+    ]
 
-    # Reset
-    dut._log.info("Reset")
-    dut.ena.value = 1
-    dut.ui_in.value = 0
-    dut.uio_in.value = 0
-    dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value = 1
+    for A, B, Cin, expected_sum, expected_cout in test_vectors:
 
-    dut._log.info("Test project behavior")
+        # Put A, B and Cin into ui_in[2:0]
+        dut.ui_in.value = (Cin << 2) | (B << 1) | A
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+        # Wait for combinational logic to update
+        await cocotb.triggers.Timer(1, units="ns")
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+        # Read outputs
+        Sum = int(dut.uo_out.value) & 1
+        Cout = (int(dut.uo_out.value) >> 1) & 1
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
+        # Check results
+        assert Sum == expected_sum, (
+            f"Wrong SUM: A={A}, B={B}, Cin={Cin}, "
+            f"expected={expected_sum}, got={Sum}"
+        )
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+        assert Cout == expected_cout, (
+            f"Wrong COUT: A={A}, B={B}, Cin={Cin}, "
+            f"expected={expected_cout}, got={Cout}"
+        )
+
+        dut._log.info(
+            f"A={A} B={B} Cin={Cin} "
+            f"-> Sum={Sum} Cout={Cout} PASS"
+        )
