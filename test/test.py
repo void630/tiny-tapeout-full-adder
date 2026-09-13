@@ -1,10 +1,12 @@
 import cocotb
+from cocotb.triggers import Timer
+
 
 @cocotb.test()
 async def test_full_adder(dut):
 
-    # Test all 8 combinations of A, B, and Cin
     test_vectors = [
+        # A, B, Cin, Expected Sum, Expected Cout
         (0, 0, 0, 0, 0),
         (0, 0, 1, 1, 0),
         (0, 1, 0, 1, 0),
@@ -17,22 +19,23 @@ async def test_full_adder(dut):
 
     for A, B, Cin, expected_sum, expected_cout in test_vectors:
 
-        # Put A, B and Cin into ui_in[2:0]
+        # Set inputs
         dut.ui_in.value = (Cin << 2) | (B << 1) | A
 
-        # Wait for combinational logic to update
-        await cocotb.triggers.Timer(1, units="ns")
+        # Wait for combinational logic to settle
+        await Timer(1, units="ns")
 
         # Read outputs
         Sum = int(dut.uo_out.value) & 1
         Cout = (int(dut.uo_out.value) >> 1) & 1
 
-        # Check results
+        # Check Sum
         assert Sum == expected_sum, (
             f"Wrong SUM: A={A}, B={B}, Cin={Cin}, "
             f"expected={expected_sum}, got={Sum}"
         )
 
+        # Check Cout
         assert Cout == expected_cout, (
             f"Wrong COUT: A={A}, B={B}, Cin={Cin}, "
             f"expected={expected_cout}, got={Cout}"
