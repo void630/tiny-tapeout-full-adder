@@ -2,9 +2,9 @@
 
 project:
   title: "Full Adder"
-  author: "void360"
+  author: "YOURNAME"
   discord: ""
-  description: "Design and simulation of a Full Adder using Tiny Tapeout"
+  description: "1-bit Full Adder designed using Verilog HDL"
   language: "Verilog"
   clock_hz: 0
   tiles: "1x1"
