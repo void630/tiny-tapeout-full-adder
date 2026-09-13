@@ -11,28 +11,29 @@ module tt_um_full_adder (
     input  wire       rst_n
 );
 
-    // Full Adder inputs
+    // Input signals
     wire A;
     wire B;
     wire Cin;
 
+    // Map Tiny Tapeout input pins
     assign A   = ui_in[0];
     assign B   = ui_in[1];
     assign Cin = ui_in[2];
 
-    // Sum
+    // Full Adder Sum
     assign uo_out[0] = A ^ B ^ Cin;
 
-    // Carry Out
+    // Full Adder Carry Out
     assign uo_out[1] =
         (A & B) |
         (A & Cin) |
         (B & Cin);
 
-    // Unused outputs
+    // Unused output pins
     assign uo_out[7:2] = 6'b000000;
 
-    // Bidirectional pins not used
+    // Unused bidirectional pins
     assign uio_out = 8'b00000000;
     assign uio_oe  = 8'b00000000;
 
