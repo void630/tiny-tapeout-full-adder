@@ -4,7 +4,7 @@
 
 This project implements a 1-bit Full Adder using Verilog HDL.
 
-The circuit has three inputs:
+The Full Adder has three inputs:
 
 - A
 - B
@@ -21,7 +21,7 @@ Sum = A XOR B XOR Cin
 
 Cout = (A AND B) OR (A AND Cin) OR (B AND Cin)
 
-The input and output pins are mapped as follows:
+The Tiny Tapeout input and output pins are mapped as follows:
 
 - ui_in[0] = A
 - ui_in[1] = B
@@ -50,7 +50,7 @@ The expected results are:
 | 1 | 1 | 0 | 0 | 1 |
 | 1 | 1 | 1 | 1 | 1 |
 
-The simulation passes when the actual outputs match the expected outputs for all eight combinations.
+The simulation passes when the actual outputs match the expected outputs for all eight input combinations.
 
 ## External hardware
 
